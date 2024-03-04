@@ -3,6 +3,16 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const User = {
+
+    async checkExist(username, email) {
+        const [result] = await pool.execute(
+            'SELECT id, username, email, fullName, age, vehicle FROM users WHERE username = ? OR email = ?',
+            [username, email]
+        );
+
+        return result;
+    },
+
     async registerUser(username, email, fullName, password, age, vehicle) {
         try {
             const checkExist = await pool.execute(
