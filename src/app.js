@@ -10,13 +10,19 @@ app.use(cors({
     credentials: true
 }))
 
-app.use(express.json({limit: "20kb"}))
+app.use(express.json({ limit: "20kb" }))
 app.use(express.urlencoded({ extended: true, limit: "20kb" }))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+import userRouter from "./routes/user.routes.js"
+
 app.get("/", (req, res) => {
     res.send("<h1>Server running</h1>");
 })
+
+// user routing
+
+app.use("/api/v1/users/", userRouter)
 
 export { app }
