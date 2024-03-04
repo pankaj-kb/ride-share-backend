@@ -5,6 +5,15 @@ import jwt from "jsonwebtoken";
 const User = {
     async registerUser(username, email, fullName, password, age, vehicle) {
         try {
+            const checkExist = await pool.execute(
+                'SELECT * FROM users WHERE username = ? OR email = ?',
+                [username, email]
+            );
+
+            if (checkExist[0].length > 0) {
+                throw new Error("User Already Exists.")
+            }
+
             const securePass = await bcrypt.hash(password, 10);
             const [result] = await pool.execute(
                 `INSERT INTO users (username, email, fullName, password, age, vehicle) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -53,7 +62,7 @@ const User = {
                 throw new Error('User not found or refreshToken not updated');
             }
 
-            return true; 
+            return true;
         } catch (error) {
             throw new Error(`Error logging out user: ${error.message}`);
         }
