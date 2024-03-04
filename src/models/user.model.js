@@ -21,7 +21,7 @@ const User = {
             );
 
             if (checkExist[0].length > 0) {
-                throw new Error("User Already Exists.")
+                throw new Error("User Already Exists", 409);
             }
 
             const securePass = await bcrypt.hash(password, 10);
@@ -41,23 +41,34 @@ const User = {
                 `SELECT * FROM users WHERE username = ? OR email = ?`,
                 [loginId, loginId]
             );
+
             if (!user || !user[0]) {
-                throw new Error('User not found');
+                throw new Error(`User not found: ${loginId}`, 404);
             }
 
             const isPasswordCorrect = await bcrypt.compare(password, user[0].password);
 
             if (!isPasswordCorrect) {
-                throw new Error(`Incorrect Password`);
+                throw new Error('Incorrect Password', 401);
             }
 
-            const accessToken = this.generateAccessToken(user[0].id, user[0].email, user[0].username, user[0].fullName);
+            const accessToken = await this.generateAccessToken(user[0].id, user[0].email, user[0].username, user[0].fullName);
+            const refreshToken = await this.generateRefreshToken(user[0].id);
 
-            const refreshToken = this.generateRefreshToken(user[0].id);
-
-            return { accessToken, refreshToken };
+            return {
+                message: 'User logged in successfully',
+                user: {
+                    userId: user[0].id,
+                    username: user[0].username,
+                    email: user[0].email,
+                    fullName: user[0].fullName,
+                },
+                accessToken,
+                refreshToken,
+            };
         } catch (error) {
-            throw new Error(`Error While Logging in: ${error.message}`);
+            const statusCode = error.statusCode || 500;
+            throw new Error(`Error While Logging in: ${error.message}`, statusCode);
         }
     },
 

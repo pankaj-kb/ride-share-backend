@@ -16,7 +16,24 @@ async function registerUser(req, res) {
         }
 
         const userId = await User.registerUser(username, email, fullName, password, age, vehicle);
-        res.status(201).json({ userId });
+        return res.status(201).json({ userId });
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({ error: error.message });
+    }
+}
+
+async function loginUser(req, res) {
+    try {
+        const { loginId, password } = req.body;
+        console.log(loginId, password)
+        if ([loginId, password].some((field) => field.trim() === "")) {
+            throw new Error("All fields are required", 400);
+        }
+        const response = await User.loginUser(loginId, password);
+        console.log(response)
+        res.status(201).json(response)
+
     } catch (error) {
         const statusCode = error.statusCode || 500;
         res.status(statusCode).json({ error: error.message });
@@ -25,4 +42,5 @@ async function registerUser(req, res) {
 
 export {
     registerUser,
+    loginUser,
 };
