@@ -1,5 +1,4 @@
 import User from "../models/user.model.js";
-import jwt from "jsonwebtoken";
 
 async function registerUser(req, res) {
     try {
@@ -32,7 +31,10 @@ async function loginUser(req, res) {
         }
         const response = await User.loginUser(loginId, password);
         console.log(response)
-        res.status(201).json(response)
+        res.status(201)
+            .cookie("accessToken", response.accessToken)
+            .cookie("refreshToken", response.refreshToken)
+            .json(response)
 
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -40,7 +42,21 @@ async function loginUser(req, res) {
     }
 }
 
+async function logoutUser(req, res) {
+    try {
+        console.log("line 49: ", req.user);
+        const response = await User.logoutUser(req.user.id);
+        res.clearCookie("accessToken")
+            .clearCookie("refreshToken")
+            .status(201)
+            .json(response);
+    } catch (error) {
+        res.status(500).json({ error: `Error logging out user: ${error.message}` });
+    }
+}
+
 export {
     registerUser,
     loginUser,
+    logoutUser,
 };

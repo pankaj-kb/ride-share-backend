@@ -83,7 +83,7 @@ const User = {
                 throw new Error('User not found or refreshToken not updated');
             }
 
-            return true;
+            return "User Logged Out.";
         } catch (error) {
             throw new Error(`Error logging out user: ${error.message}`);
         }
