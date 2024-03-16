@@ -43,13 +43,13 @@ const User = {
             );
 
             if (!user || !user[0]) {
-                throw new Error(`User not found: ${loginId}`, 404);
+                return new Error(`User not found: ${loginId}`, 404);
             }
 
             const isPasswordCorrect = await bcrypt.compare(password, user[0].password);
 
             if (!isPasswordCorrect) {
-                throw new Error('Incorrect Password', 401);
+                return new Error('Incorrect Password', 401);
             }
 
             const accessToken = await this.generateAccessToken(user[0].id, user[0].email, user[0].username, user[0].fullName);
