@@ -21,7 +21,7 @@ const User = {
             );
 
             if (checkExist[0].length > 0) {
-                throw new Error("User Already Exists", 409);
+                return new Error("User Already Exists", 409);
             }
 
             const securePass = await bcrypt.hash(password, 10);
@@ -31,7 +31,7 @@ const User = {
             );
             return result.insertId;
         } catch (error) {
-            throw new Error(`Error Creating User: ${error.message}`);
+            return new Error(`Error Creating User: ${error.message}`);
         }
     },
 
@@ -68,7 +68,7 @@ const User = {
             };
         } catch (error) {
             const statusCode = error.statusCode || 500;
-            throw new Error(`Error While Logging in: ${error.message}`, statusCode);
+            return new Error(`Error While Logging in: ${error.message}`, statusCode);
         }
     },
 
@@ -80,12 +80,12 @@ const User = {
             );
 
             if (result.affectedRows === 0) {
-                throw new Error('User not found or refreshToken not updated');
+                return new Error('User not found or refreshToken not updated');
             }
 
             return "User Logged Out.";
         } catch (error) {
-            throw new Error(`Error logging out user: ${error.message}`);
+            return new Error(`Error logging out user: ${error.message}`);
         }
     },
 
