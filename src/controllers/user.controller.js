@@ -56,13 +56,22 @@ async function logoutUser(req, res) {
 }
 
 async function getCurrentUser(req, res) {
-    const user = req.user;
-    res.status(201)
-        .json(user)
+    const userId = req.user.id
+    try {
+        console.log("from getcurrentUser line 61", req.user)
+        const response = await User.getCurrentUser(userId)
+        res.status(201)
+            .json(response)
+    } catch (error) {
+        res.status(500).json({ error: `Error while fetching current user: ${error.message}` })
+    }
 }
+
+
 
 export {
     registerUser,
     loginUser,
     logoutUser,
+    getCurrentUser,
 };

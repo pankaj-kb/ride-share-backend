@@ -89,6 +89,20 @@ const User = {
         }
     },
 
+    async getCurrentUser(userId) {
+        try {
+            const [user] = await pool.execute(
+                `SELECT * FROM users WHERE id = ?`, [userId]
+            );
+            if (!user || user.length === 0) {
+                return new Error("User not found", 404);
+            }
+            return user[0];
+        } catch (error) {
+            return new Error(`Error fetching the current User: ${error.message}`);
+        }
+    },
+
     async generateAccessToken(userId, email, username, fullName) {
         const accessToken = jwt.sign(
             { userId, email, username, fullName },
@@ -107,6 +121,7 @@ const User = {
         await pool.execute('UPDATE users SET refreshToken = ? WHERE id = ?', [refreshToken, userId]);
         return refreshToken;
     },
+
 };
 
 export default User;
