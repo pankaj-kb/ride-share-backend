@@ -55,6 +55,12 @@ async function logoutUser(req, res) {
     }
 }
 
+async function getCurrentUser(req, res) {
+    const user = req.user;
+    res.status(201)
+        .json(user)
+}
+
 export {
     registerUser,
     loginUser,
